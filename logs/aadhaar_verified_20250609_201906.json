@@ -1,0 +1,25 @@
+{
+  "client_id": "upload_aadhaar_YoxujBkhFEsbtigwcLyx",
+  "full_name": "Rishi Vijaywargiya",
+  "aadhaar_number": "",
+  "dob": "2002-09-11",
+  "care_of": "C/O Sumeet Vijaywargiya",
+  "gender": "M",
+  "address": {
+    "country": "India",
+    "dist": "Mumbai Suburban",
+    "state": "Maharashtra",
+    "po": "Jogeshwari East",
+    "loc": "Andheri east",
+    "vtc": "Mumbai",
+    "subdist": "",
+    "street": "J V link road",
+    "house": "C 1301 Splendor complex C H S limited",
+    "full_address": ""
+  },
+  "zip": "400060",
+  "profile_image": "https://aadhaar-kyc-docs.s3.amazonaws.com/sunteckrealty/upload_aadhaar/986720231227220202251/986720231227220202251-2025-06-09-144905874371.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAY5K3QRM5FYWPQJEB%2F20250609%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20250609T144905Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=eeca0a3ea5f3ede0807a3e064f3ab281905f15b8415ac51d53d613787ca155e7",
+  "has_image": true,
+  "reference_id": "986720231227220202251",
+  "last_digits": "9867"
+}

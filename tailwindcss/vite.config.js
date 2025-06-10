@@ -7,7 +7,7 @@ export default defineConfig({
     host: true, // 👈 allow external access (e.g., from phone)
     port: 5174,
     allowedHosts: [
-      '0e85-2401-4900-56d3-624e-84a6-13c8-d129-ba05.ngrok-free.app' // ✅ no protocol (no https://)
+      '2f6c-2405-201-15-20ef-c15f-2b15-a9a3-d9f7.ngrok-free.app' // ✅ no protocol (no https://)
     ],
   },
   plugins: [react(), tailwindcss()],

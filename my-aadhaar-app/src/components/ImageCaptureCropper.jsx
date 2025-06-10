@@ -31,7 +31,10 @@ export default function AadhaarCameraCapture() {
     setStatus("📡 Fetching latest Aadhaar verification...");
     try {
       const res = await fetch("http://172.20.10.4:6969/aadhaar-latest");
+      
+      
       const json = await res.json();
+      console.log(json)
       if (json.status === "success") {
         setLatestData(json.data);
         setStatus("✅ Latest Aadhaar data fetched.");
@@ -43,6 +46,32 @@ export default function AadhaarCameraCapture() {
       setStatus("❌ Failed to fetch latest Aadhaar data.");
     }
   };
+
+
+  // //NEW CODE
+  // useEffect(() => {
+  //   const initCamera = async () => {
+  //     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+  //       setStatus("❌ Camera not supported on this device.");
+  //       return;
+  //     }
+  //     try {
+  //       const stream = await navigator.mediaDevices.getUserMedia({
+  //         video: { facingMode: "environment", width: 1920, height: 1080 },
+  //       });
+  //       if (videoRef.current) {
+  //         videoRef.current.srcObject = stream;
+  //       }
+  //       setStatus("✅ Camera initialized.");
+  //     } catch (err) {
+  //       console.error("Camera error:", err);
+  //       setStatus(`❌ Failed to access camera: ${err.message}`);
+  //     }
+  //   };
+  //   initCamera();
+  // }, []);
+  
+
 
   useEffect(() => {
     const initCamera = async () => {

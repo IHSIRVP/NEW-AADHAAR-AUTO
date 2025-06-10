@@ -74,7 +74,8 @@ def update_status(msg):
     status_text["status"] = msg
 
 def read_qr_code_from_image(image_path):
-    url = "http://api.qrserver.com/v1/read-qr-code/"
+    # url = "http://api.qrserver.com/v1/read-qr-code/"
+
     with open(image_path, "rb") as f:
         files = {"file": f}
         response = requests.post(url, files=files)
@@ -217,11 +218,30 @@ def load_page():
 
 # === Flask API ===
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}) ## CORS Value Previous was ""CORS(app)""
+# CORS(app, resources={r"/*": {"origins": "*"}}) ## CORS Value Previous was ""CORS(app)"" -- MAIN
+# CORS(app, resources={r"/*": {"origins": "https://0e85-2401-4900-56d3-624e-84a6-13c8-d129-ba05.ngrok-free.app"}})
+# CORS(app, resources={r"/*": {"origins": "*"}}) 
+
+CORS(
+    app,
+    resources={r"/*": {
+        "origins": [
+            "http://localhost:5174", 
+            "https://2f6c-2405-201-15-20ef-c15f-2b15-a9a3-d9f7.ngrok-free.app"  # prod front-end
+        ]
+    }}     # turn on only if you send cookies / auth headers
+)
+
+
+@app.route("/")
+def index():
+    return {"message": "Backend is running"}, 200
+
+
 
 @app.route('/captcha-image', methods=['GET'])
 def get_captcha_image():
-    return send_from_directory('static', 'captcha_only.png')
+    return send_from_directory('/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static', 'captcha_only.png')
 
 
 
@@ -237,20 +257,20 @@ def set_aadhaar():
 
         # Wait for CAPTCHA image to exist
         for _ in range(20):
-            if os.path.exists("static/captcha_only.png"):
+            if os.path.exists("/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static"):
                 break
             time.sleep(0.1)
 
 
 
         # ✅ Screenshot the full UIDAI page and encode as base64
-        screenshot_file = "static/full_page_after_aadhaar.png"
+        screenshot_file = "/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static/full_page_after_aadhaar.png"
         driver.save_screenshot(screenshot_file)
 
         with open(screenshot_file, "rb") as img_file:
             screenshot_base64 = base64.b64encode(img_file.read()).decode("utf-8")
 
-        captcha_ready = os.path.exists("static/captcha_only.png")
+        captcha_ready = os.path.exists("/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static")
         return jsonify({
             "status": "success",
             "message": "Aadhaar set",
@@ -270,11 +290,11 @@ def submit_aadhaar():
             captcha_input = WebDriverWait(driver, 15).until(EC.element_to_be_clickable((By.XPATH, "//input[@name='captcha']")))
             driver.save_screenshot(screenshot_path)
             x, y = captcha_input.location['x'], captcha_input.location['y']
-            if not os.path.exists("static"):
-                os.makedirs("static")
+            if not os.path.exists("/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static"):
+                os.makedirs("/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static")
             img = Image.open(screenshot_path).crop((x + 200, y + 300, x + 2000, y + 450))
-            img.save("static/captcha_only.png")
-            captcha_image = ImageTk.PhotoImage(Image.open("static/captcha_only.png"))
+            img.save("/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static/captcha_only.png")
+            captcha_image = ImageTk.PhotoImage(Image.open("/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static/captcha_only.png"))
             captcha_label_img.config(image=captcha_image)
             captcha_label_img.image = captcha_image
             captcha_label_img.pack()
@@ -337,8 +357,21 @@ def set_otp():
         return jsonify({"status": "error", "message": "PDF not ready yet."})
     return jsonify({"status": "error", "message": "No OTP received"}), 400
 
-@app.route('/status', methods=['GET'])
+from flask import request, jsonify
+
+from flask import request, jsonify
+import sys, logging
+
+@app.route("/status", methods=["GET"])
 def get_status():
+    # preferred: use the Flask logger
+    app.logger.info("🔍 /status hit – Origin=%s  URL=%s",
+                    request.headers.get("Origin"), request.url)
+
+    print("HIT")
+    # if you still want plain print, flush immediately
+    print("🧾 status_text:", status_text, flush=True)
+
     return jsonify(status_text)
 
 @app.route('/check-download', methods=['GET'])
@@ -397,7 +430,7 @@ def scan_qr_from_pdf():
         payload = {"qr_text": qr_data}
 
         response = requests.post(
-            # "https://sandbox.surepass.app/api/v1/aadhaar/upload/qr",
+            "https://sandbox.surepass.app/api/v1/aadhaar/upload/qr",
             headers=headers,
             json=payload
         )
@@ -445,7 +478,7 @@ def analyze_image():
         # Step 1: Decode QR
         with open(image_path, "rb") as f:
             files = {"file": f}
-            qr_res = requests.post("http://api.qrserver.com/v1/read-qr-code/", files=files)
+            # qr_res = requests.post("http://api.qrserver.com/v1/read-qr-code/", files=files)
 
         qr_data = qr_res.json()[0]["symbol"][0]["data"]
         print(qr_data)
@@ -552,8 +585,10 @@ def check_image_text():
 @app.route('/aadhaar-latest', methods=['GET'])
 def get_latest_aadhaar_result():
     try:
-        logs_dir = "logs"
+        print("HELLOO")
+        logs_dir = "/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/logs"
         if not os.path.exists(logs_dir):
+            print("NOWWW")
             return jsonify({"status": "error", "message": "No logs found"}), 404
 
         files = [f for f in os.listdir(logs_dir) if f.startswith("aadhaar_verified_") and f.endswith(".json")]
@@ -625,14 +660,14 @@ def safe_delete(path):
 
 cleanup_paths = [
     
-    "/Users/rishivijaywargiya/FULL/static/captcha_only.png",
-    "/Users/rishivijaywargiya/FULL/static/full_page_after_aadhaar.png",
-    "/Users/rishivijaywargiya/FULL/aadhaar_page.png", 
-    "/Users/rishivijaywargiya/FULL/static/extracted_region.png", 
-    "/Users/rishivijaywargiya/FULL/static/locked.pdf", 
-    "/Users/rishivijaywargiya/FULL/static/unlocked.pdf", 
-    "/Users/rishivijaywargiya/FULL/static/cropped.jpg", 
-    "/Users/rishivijaywargiya/FULL/logs"
+    "/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static/captcha_only.png",
+    "/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static/full_page_after_aadhaar.png",
+    "/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/aadhaar_page.png", 
+    "/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static/extracted_region.png", 
+    "/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static/locked.pdf", 
+    "/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static/unlocked.pdf", 
+    "/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/static/cropped.jpg", 
+    "/Users/rishivijaywargiya/Desktop/FULL_For_IPAD/logs"
 
 ]
 
@@ -648,9 +683,19 @@ signal.signal(signal.SIGTERM, cleanup_and_exit)  # Kill/terminate
 
 
 def run_flask():
-    app.run(host="0.0.0.0", port=6969) ##  app.run(port=6969)
+    # • turn the reloader off
+    # • keep debug=False (True would start the reloader again)
+    # • threaded=True lets Flask handle several requests while Tkinter is running
+    app.run(
+        host="0.0.0.0",
+        port=6969,
+        debug=False,
+        use_reloader=False,
+        threaded=True
+    )
 
 threading.Thread(target=run_flask, daemon=True).start()
+
 
 # === GUI Start ===
 load_page()

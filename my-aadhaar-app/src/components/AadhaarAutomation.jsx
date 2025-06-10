@@ -13,7 +13,7 @@ export default function AadhaarAutomation() {
   const [captchaImageUrl, setCaptchaImageUrl] = useState(null);
   const [otpVisible, setOtpVisible] = useState(false);
 
-  const backendBase = "http://172.20.10.4:6969";
+  const backendBase = "https://cc4e-114-143-58-30.ngrok-free.app"; 
 
   useEffect(() => {
     const pollStatus = async () => {
